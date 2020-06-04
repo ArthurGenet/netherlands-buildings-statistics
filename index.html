@@ -1,0 +1,74 @@
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta
+		name="viewport"
+		content="initial-scale=1,maximum-scale=1,user-scalable=no"
+		/>
+		<title>SceneLayerView - query statistics by geometry - 4.12</title>
+
+
+		<!-- Load the Chart.js library -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+		<link
+			rel="stylesheet"
+			href="https://js.arcgis.com/4.12/esri/themes/light/main.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="style.css"
+		/>
+		<script src="https://js.arcgis.com/4.12/"></script>
+		<script src=app.js></script>
+	</head>
+	<body>
+		<div id="viewDiv"></div>
+		<div id="queryDiv" class="esri-widget">
+			<b>Query by geometry</b><br />
+			<br />Draw a geometry to query by:
+			<div class="geometry-options">
+				<button
+					class="esri-widget--button esri-icon-map-pin geometry-button"
+					id="point-geometry-button"
+					value="point"
+					title="Query by point"
+				></button>
+				<button
+					class="esri-widget--button esri-icon-polyline geometry-button"
+					id="line-geometry-button"
+					value="polyline"
+					title="Query by line"
+				></button>
+				<button
+					class="esri-widget--button esri-icon-polygon geometry-button"
+					id="polygon-geometry-button"
+					value="polygon"
+					title="Query by polygon"
+				></button>
+			</div>
+			<br />
+			<div class="tooltip">
+				<label for="bufferNum">Set a geometry buffer size:</label>
+				<div id="bufferNum"></div>
+			</div>
+			<br />
+			<button class="esri-button" id="clearGeometry" type="button">
+				Clear
+			</button>
+		</div>
+		<div id="resultDiv" class="esri-widget">
+			<div class="count">
+				Selected Buildings:
+				<div class="count" id="count">0</div>
+			</div>
+			<div class="charts">
+				<div>
+					<canvas id="year-chart" height="250" width="260" />
+				</div>
+				<div>
+					<canvas id="material-chart" width="250" height="440" />
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
