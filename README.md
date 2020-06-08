@@ -1,2 +1,3 @@
-# netherlands-buildings-statistcis
-A ArcGIS Web App showing Netherlands buildings in 3D and giving statistics on selected areas.
+# netherlands-buildings-statistics
+A ArcGIS Web App showing Netherlands buildings in 3D and giving statistics on selected areas.  
+[View it live](https://arthurgenet.github.io/netherlands-buildings-statistics/ "Netherlands buildings statistics")
