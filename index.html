@@ -13,64 +13,77 @@ https://developers.arcgis.com/javascript/latest/sample-code/layers-scenelayervie
 
 
 		<!-- Load the Chart.js library -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 		<link
 			rel="stylesheet"
 			href="https://js.arcgis.com/4.12/esri/themes/light/main.css"
 		/>
+		<!-- Css stylesheet -->
 		<link
 			rel="stylesheet"
 			href="style.css"
 		/>
+		<!-- ArcGIS JavaScript API -->
 		<script src="https://js.arcgis.com/4.12/"></script>
+		<!-- JavaScript script -->
 		<script src=app.js></script>
 	</head>
+
 	<body>
+		<!-- Map div -->
 		<div id="viewDiv"></div>
+		<!-- Query by geometry div -->
 		<div id="queryDiv" class="esri-widget">
-			<b>Query by geometry</b><br />
-			<br />Draw a geometry to query by:
+			<b>Interactieve selectie</b><br />
+			<br />Teken om te selecteren:
+			<!-- Type of geometry query div -->
 			<div class="geometry-options">
 				<button
 					class="esri-widget--button esri-icon-map-pin geometry-button"
 					id="point-geometry-button"
 					value="point"
-					title="Query by point"
+					title="Selecteer op basis van een punt"
 				></button>
 				<button
 					class="esri-widget--button esri-icon-polyline geometry-button"
 					id="line-geometry-button"
 					value="polyline"
-					title="Query by line"
+					title="Selecteer op basis van een lijn"
 				></button>
 				<button
 					class="esri-widget--button esri-icon-polygon geometry-button"
 					id="polygon-geometry-button"
 					value="polygon"
-					title="Query by polygon"
+					title="Selecteer op basis van een vlak"
 				></button>
 			</div>
 			<br />
+			<!-- Buffer div -->
 			<div class="tooltip">
-				<label for="bufferNum">Set a geometry buffer size:</label>
+				<label for="bufferNum">Selectie buffer:</label>
 				<div id="bufferNum"></div>
 			</div>
 			<br />
 			<button class="esri-button" id="clearGeometry" type="button">
-				Clear
+				Opnieuw
 			</button>
 		</div>
+		<!-- Results panel div -->
 		<div id="resultDiv" class="esri-widget">
+			<!-- Number of buildings selected div -->
 			<div class="count">
-				Selected Buildings:
+				Geselecteerde gebouwen: 
 				<div class="count" id="count">0</div>
 			</div>
+			<!-- Charts div -->
 			<div class="charts">
+				<!-- Histogram div -->
 				<div>
-					<canvas id="year-chart" height="250" width="260" />
+					<canvas id="histogram-chart" height="250" width="260" />
 				</div>
+				<!-- Pie chart div -->
 				<div>
-					<canvas id="material-chart" width="250" height="440" />
+					<canvas id="pie-chart" width="250" height="440" />
 				</div>
 			</div>
 		</div>

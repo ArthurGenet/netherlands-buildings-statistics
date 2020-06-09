@@ -40,13 +40,13 @@ var after_last_date = true;
 // The labels you want to put for your histogram
 // The length should be the length of the "list_histogram_attributes" + 1 if "before_first_date" is true and 
 //+ 1 if "after_last_date" is true
-var labels_for_histogram = ["-1600", "1600-1699", "1700-1799", "1800-1899", "1900-1999", "2000-"];
+var labels_for_histogram = ["1600 en eerder", "1600-1699", "1700-1799", "1800-1899", "1900-1999", "2000 en later"];
 
 // The title of the pie chart
-var title_pie_chart = "Building type";
+var title_pie_chart = "Gebruiksfunctie";
 
 // The title of the histogram
-var title_histogram = "Year of build";
+var title_histogram = "Bouwjaar";
 
 // END OF PARAMETERS
 
@@ -348,12 +348,16 @@ require([
 		query.geometry = sketchGeometry;
 		// It takes account of the buffer size
 		query.distance = bufferSize;
-		// The array 
+		// The array we created with all the queries to do 
 		query.outStatistics = statDefinitions;
 
+		// Run the query
 		return sceneLayerView.queryFeatures(query).then(function(result) {
 
+			// We retrieve the result
 			var allStats = result.features[0].attributes;
+
+			// We create a list in which we store all the results to update our pie chart
 			var updateChartList =[];
 			
 			for (let i = 0; i < list_pie_chart_attributes.length; i++){
@@ -363,18 +367,21 @@ require([
 
 			updateChart(pieChart, updateChartList);
 
+			// We create a list in which we store all the results to update our histogram
 			var updateHistoList =[];
 			
 			for (let i = 0; i < list_histogram_attributes.length - 1; i++){
 
+				// If we want the data before the first value
 				if (i == 0){
 					if (before_first_date == true){
 						updateHistoList.push(allStats["before"]);
 					}
 				}
-
+				// Take all the ranged data
 				updateHistoList.push(allStats[list_histogram_attributes[i]]);
 
+				// If we want the data after the last value
 				if (i == list_histogram_attributes.length - 2){
 
 
@@ -394,19 +401,21 @@ require([
 
 		// Updates the given chart with new data
 		function updateChart(chart, dataValues) {
+			// Add the new data to the selected chart
 			chart.data.datasets[0].data = dataValues;
 			chart.update();
 		}
 
+		// Display the histogram
 		function createHistogram() {
-			const histogramCanvas = document.getElementById("year-chart");
+			const histogramCanvas = document.getElementById("histogram-chart");
 			histogram = new Chart(histogramCanvas.getContext("2d"), {
 				type: "horizontalBar",
 				data: {
-					labels: labels_for_histogram,
+					labels: labels_for_histogram, // the labels we chose in the parameters
 					datasets: [
 						{
-						label: title_histogram,
+						label: title_histogram, // the title we chose in the parameters
 						backgroundColor: "#149dcf",
 						stack: "Stack 0",
 						data: [0, 0, 0, 0, 0, 0]
@@ -442,15 +451,16 @@ require([
 		});
 		}
 
+		// Display the pie chart
 		function createPieChart() {
-		const pieChartCanvas = document.getElementById("material-chart");
+		const pieChartCanvas = document.getElementById("pie-chart");
 		pieChart = new Chart(pieChartCanvas.getContext("2d"), {
 			type: "doughnut",
 			data: {
-				labels: list_pie_chart_attributes,
+				labels: list_pie_chart_attributes, // the labels we chose in the parameters
 				datasets: [
 				{
-					backgroundColor: list_pie_chart_color,
+					backgroundColor: list_pie_chart_color, // the colors we chose in the parameters
 					borderWidth: 0,
 					data: [0, 0, 0, 0, 0]
 				}
@@ -458,108 +468,131 @@ require([
 			},
 			options: {
 				responsive: false,
-				cutoutPercentage: 35,
+				cutoutPercentage: 35, // proportion of the doughnut hole
 				legend: {
-					position: "bottom",
-					align: "start"
+					position: "bottom", // display the legend at the bottom of the pie-chart
 				},
 				title: {
 					display: true,
-					text: title_pie_chart
+					text: title_pie_chart // the title we chose in the parameters
 				}
 			}
 		});
 		}
+
+		// Clear the charts and remove them
 		function clearCharts() {
 			updateChart(pieChart, [0, 0, 0, 0, 0]);
 			updateChart(histogram, [0, 0, 0, 0, 0, 0]);
 			document.getElementById("count").innerHTML = 0;
 		}
+
+		// Display the 2 charts
 		createHistogram();
 		createPieChart();
 
-		var canvas_pie_chart = document.getElementById("material-chart");
-		var canvas_histogram = document.getElementById("year-chart");
+		var canvas_pie_chart = document.getElementById("pie-chart");
+		var canvas_histogram = document.getElementById("histogram-chart");
 
+		// Instance variables to test if the user has already click on the chart or not
 		var test_click_on_pie_chart = 0;
 		var test_click_on_histogram = 0;
 
+		// if the user click on the pie chart
 		canvas_pie_chart.onclick = function(evt) {
 
-	    var activePointsPieChart = pieChart.getElementsAtEvent(evt);
+		    var activePointsPieChart = pieChart.getElementsAtEvent(evt);
 
-	    if (activePointsPieChart[0]) {
+		    if (activePointsPieChart[0]) {
 
-	        var chartData = activePointsPieChart[0]['_chart'].config.data;
-	        var idx = activePointsPieChart[0]['_index'];
-		    var label = chartData.labels[idx];
+				// Retrieve the active label
+		        var chartData = activePointsPieChart[0]['_chart'].config.data;
+		        var idx = activePointsPieChart[0]['_index'];
+			    var label = chartData.labels[idx]; 
 
-		    if (test_click_on_pie_chart == 0){
-		      	test_click_on_pie_chart = 1;
+			    // if its the first click
+			    if (test_click_on_pie_chart == 0){
+			      	test_click_on_pie_chart = 1;
 
-		        sceneLayer.definitionExpression = pie_chart_field_name + " LIKE '" + label + "'";
-		    }   	
-		      	
-		    else{
-		        test_click_on_pie_chart = 0
-		      	sceneLayer.definitionExpression = "1 = 1";
-		    }
-		}
+			      	// We update the layer to only display the selected label
+			        sceneLayer.definitionExpression = pie_chart_field_name + " LIKE '" + label + "'";
+			    }   	
+			    
+			    // if the user has already clickes
+			    else{
+			        test_click_on_pie_chart = 0
+			        // We update the layer to display everything
+			      	sceneLayer.definitionExpression = "1 = 1";
+			    }
+			}
 		};
 
+		// if the user click on the pie chart		
 		canvas_histogram.onclick = function(evt) {
 
-	    var activePointsHistogram = histogram.getElementsAtEvent(evt);
-		if (activePointsHistogram[0]) {
+		    var activePointsHistogram = histogram.getElementsAtEvent(evt);
+			if (activePointsHistogram[0]) {
+				// We retrieve the active label
+		        var chartData = activePointsHistogram[0]['_chart'].config.data;
+		        var idx = activePointsHistogram[0]['_index'];
+			    var label = chartData.labels[idx];
 
-	        var chartData = activePointsHistogram[0]['_chart'].config.data;
-	        var idx = activePointsHistogram[0]['_index'];
-		    var label = chartData.labels[idx];
+			    // if it is the first click
+			    if (test_click_on_histogram == 0){
 
-		    if (test_click_on_histogram == 0){
-		      	test_click_on_histogram = 1;
-				index_in_labels = labels_for_histogram.indexOf(label);
-				if (index_in_labels == 0){
-					if (before_first_date == true){
-		        		sceneLayer.definitionExpression = histogram_field_name + " < " + list_histogram_attributes[0];
-					}
-					else{
-						sceneLayer.definitionExpression = histogram_field_name + " >= " + list_histogram_attributes[0] + 
-						" AND " + histogram_field_name + " < " + list_histogram_attributes[1];
-					}
-				}
-				
-				else if (index_in_labels == labels_for_histogram.length-1){
+			      	test_click_on_histogram = 1;
 
-					if (after_last_date == true){
-						sceneLayer.definitionExpression = histogram_field_name + " >= " +
-						list_histogram_attributes[list_histogram_attributes.length-1];
+			      	// We retrieve the label index in the labels list
+					index_in_labels = labels_for_histogram.indexOf(label);
+
+					// if the index of the label in the labels list is 0
+					if (index_in_labels == 0){
+
+						// if we want to take the values before the first date
+						if (before_first_date == true){
+			        		sceneLayer.definitionExpression = histogram_field_name + " < " + list_histogram_attributes[0];
+						}
+						else{
+							sceneLayer.definitionExpression = histogram_field_name + " >= " + list_histogram_attributes[0] + 
+							" AND " + histogram_field_name + " < " + list_histogram_attributes[1];
+						}
 					}
+					
+					// if the index is the last in the list
+					else if (index_in_labels == labels_for_histogram.length-1){
+
+						// if we want to take the values after the last date
+						if (after_last_date == true){
+							sceneLayer.definitionExpression = histogram_field_name + " >= " +
+							list_histogram_attributes[list_histogram_attributes.length-1];
+						}
+						else{
+							sceneLayer.definitionExpression = histogram_field_name + " >= " + 
+							list_histogram_attributes[list_histogram_attributes.length-2] + " AND " + 
+							histogram_field_name + " < " + list_histogram_attributes[list_histogram_attributes.length-1];
+						}
+					}
+
 					else{
-						sceneLayer.definitionExpression = histogram_field_name + " >= " + 
-						list_histogram_attributes[list_histogram_attributes.length-2] + " AND " + 
-						histogram_field_name + " < " + list_histogram_attributes[list_histogram_attributes.length-1];
+						if(before_first_date == true){
+							sceneLayer.definitionExpression = histogram_field_name + " >= " + 
+							list_histogram_attributes[index_in_labels-1] + " AND " + 
+							histogram_field_name + " < " + list_histogram_attributes[index_in_labels];
+						}
+						else{
+							sceneLayer.definitionExpression = histogram_field_name + " >= " + 
+							list_histogram_attributes[index_in_labels] + " AND " + 
+							histogram_field_name + " < " + list_histogram_attributes[index_in_labels+1];
+						}
 					}
-				}
-				else{
-					if(before_first_date == true){
-						sceneLayer.definitionExpression = histogram_field_name + " >= " + 
-						list_histogram_attributes[index_in_labels-1] + " AND " + 
-						histogram_field_name + " < " + list_histogram_attributes[index_in_labels];
-					}
-					else{
-						sceneLayer.definitionExpression = histogram_field_name + " >= " + 
-						list_histogram_attributes[index_in_labels] + " AND " + 
-						histogram_field_name + " < " + list_histogram_attributes[index_in_labels+1];
-					}
-				}
-		    }   	
-		      	
-		    else{
-		        test_click_on_histogram = 0
-		      	sceneLayer.definitionExpression = "1 = 1";
-		    }
-		}
+			    }   
+
+			    // if the user has already clicked
+			    else{
+			        test_click_on_histogram = 0
+			      	sceneLayer.definitionExpression = "1 = 1";
+			    }
+			}
 		};
 	
 
