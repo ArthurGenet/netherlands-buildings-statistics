@@ -61,6 +61,7 @@ require([
 	"esri/widgets/Slider",
 	"esri/geometry/geometryEngine",
 	"esri/Graphic",
+	"esri/widgets/Search",
 	"esri/core/promiseUtils"
 	], function(
 		WebScene,
@@ -70,6 +71,7 @@ require([
 		Slider,
 		geometryEngine,
 		Graphic,
+		Search,
 		promiseUtils
 	) {
 
@@ -118,6 +120,15 @@ require([
 				runQuery();
 			}
 		});
+		const searchWidget = new Search({
+			  view: view
+			});
+			// Adds the search widget below other elements in
+			// the top left corner of the view
+			view.ui.add(searchWidget, {
+			  position: "top-right",
+			  index: 2
+			});
 
 		view.ui.add([queryDiv], "bottom-left");
 		view.ui.add([resultDiv], "top-right");
